@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Assuming layout.css is a separate file or its content is inlined here -->
+    <!-- <link rel="stylesheet" href="layout.css"> -->
     <style>
         :root {
             --sidebar-bg: #151718;
@@ -91,7 +93,7 @@
         
         .sidebar-content {
             flex: 1;
-            overflow-y: auto;
+            overflow-y: scroll; /* Always show scrollbar to prevent content shift */
             overflow-x: hidden;
             scrollbar-width: thin;
             scrollbar-color: var(--sidebar-hover) var(--sidebar-bg);
@@ -115,22 +117,45 @@
             padding: 15px;
             margin: 0 15px 15px;
             border-radius: 8px;
-            text-align: center;
             position: relative;
+            display: flex; /* Use flexbox for logo and text alignment */
+            align-items: center; /* Align items vertically */
+            justify-content: flex-start; /* Align items to the start */
+            gap: 10px; /* Space between logo and text */
+        }
+
+        .panel-logo {
+            width: 34px; /* Adjust size as needed */
+            height: 34px;
+            border-radius: 50%; /* If you want a circular logo */
+            object-fit: cover;
+            flex-shrink: 0; /* Prevent logo from shrinking */
         }
         
+        .panel-header-text { /* New class for the text container */
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start; /* Align text to the start */
+            flex-grow: 1; /* Allow text to take available space */
+        }
+
         .panel-title {
             font-weight: 600;
             font-size: 16px;
             color: white;
-            margin-bottom: 4px;
+            padding-bottom: 0; /* Remove padding-bottom */
             transition: opacity var(--transition-speed);
+            text-align: left; /* Align text to the left */
         }
         
         .panel-subtitle {
             font-size: 12px;
             color: rgba(255, 255, 255, 0.7);
             transition: opacity var(--transition-speed);
+            display: flex;
+            align-items: center;
+            justify-content: flex-start; /* Align items to the start */
+            gap: 5px;
         }
         
         .sidebar-section {
@@ -346,7 +371,7 @@
         .submenu {
             max-height: 0;
             overflow: hidden;
-            transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: max-height 0.5s ease-in-out; /* Adjusted for smoother transition */
             margin-left: 10px;
             padding-left: 10px;
             border-left: 1px solid var(--divider-color);
@@ -359,12 +384,16 @@
             transition: all 0.3s ease;
             transform-origin: top;
         }
+
+        .submenu .sidebar-item .sidebar-item-icon {
+            margin-right: 10px; /* Ensure icons in submenu are also spaced */
+        }
         
         .sidebar-item.has-submenu::after {
             content: '›';
             margin-left: auto;
             transform: rotate(90deg);
-            transition: transform var(--transition-speed);
+            transition: transform 0.15s ease-in-out; /* Adjusted for quicker rotation */
             color: rgba(255, 255, 255, 0.7);
         }
         
@@ -373,7 +402,7 @@
         }
         
         .sidebar-item.has-submenu.open + .submenu {
-            max-height: 500px;
+            max-height: 1000px; /* Increased max-height for smoother transition */
             margin-top: 5px;
             margin-bottom: 10px;
         }
@@ -416,17 +445,56 @@
             margin-bottom: 20px;
             padding-bottom: 15px;
             border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start; /* Align items to the top */
+            flex-wrap: wrap; /* Allow items to wrap on smaller screens */
         }
         
+        .page-header-left {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
         .page-header h2 {
             color: #333;
             font-size: 24px;
             margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
         
         .page-header p {
             color: #666;
             font-size: 14px;
+            margin-top: -3px; /* Adjust margin to align with h2's starting point */
+            margin-left: 0px; /* Adjust to align with the text of h2, considering icon width + gap */
+        }
+
+        .page-header-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 5px; /* Adjust margin to align with the top of the header */
+        }
+
+        .action-button {
+            background-color: #f0f0f0;
+            border: 1px solid #ddd;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+
+        .action-button:hover {
+            background-color: #e0e0e0;
+            border-color: #ccc;
         }
         
         /* Mobile Header */
@@ -489,6 +557,177 @@
             visibility: visible;
         }
         
+        /* Notification styles */
+        .notification-bell-container {
+            position: relative;
+            display: inline-block;
+            background-color: rgba(0, 0, 0, 0.2); /* Soft black background */
+            border-radius: 50%;
+            padding: 8px; /* Adjust padding as needed */
+            margin-left: auto; /* Push to the right */
+            margin-top: 0; /* Adjusted to align with panel-subtitle */
+        }
+
+        .notification-bell {
+            color: #FFD700;
+            cursor: pointer;
+            font-size: 20px; /* Bigger bell */
+            transition: transform 0.2s ease;
+        }
+
+        .notification-bell:hover {
+            transform: scale(1.1);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: 0px; /* Adjusted to be on the bell icon */
+            right: 0px; /* Adjusted to be on the bell icon */
+            background-color: #ff4757;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--sidebar-bg);
+        }
+
+        /* Mobile notification bell */
+        .mobile-notification-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background-color 0.2s;
+            margin-right: 10px;
+            position: relative;
+        }
+
+        .mobile-notification-btn .notification-bell {
+            font-size: 20px;
+            margin: 0;
+        }
+
+        .mobile-notification-btn .notification-badge {
+            top: 5px;
+            right: 5px;
+            width: 18px;
+            height: 18px;
+            font-size: 10px;
+            border: 2px solid var(--sidebar-bg);
+        }
+        
+        /* Notification Canvas specific styles */
+        #notificationCanvas {
+            position: fixed;
+            top: 20px; /* Aligned with sidebar top */
+            right: 20px;
+            width: 320px;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            z-index: 101; /* Above sidebar */
+            display: flex;
+            flex-direction: column;
+            max-height: calc(100vh - 40px);
+            overflow: hidden;
+            transform: translateY(-20px); /* Initial hidden state */
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease-in-out;
+        }
+        
+        #notificationCanvas.active {
+            transform: translateY(0);
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .notification-header {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .notification-header h3 {
+            margin: 0;
+            font-size: 16px;
+        }
+        
+        .notification-close {
+            background: none;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            color: #666;
+        }
+        
+        .notification-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0;
+        }
+        
+        .notification-item {
+            padding: 12px 15px;
+            border-bottom: 1px solid #f5f5f5;
+            transition: background-color 0.2s;
+        }
+        
+        .notification-item:hover {
+            background-color: #f9f9f9;
+        }
+        
+        .notification-item.unread {
+            background-color: #f8f9fa;
+        }
+        
+        .notification-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+        
+        .notification-message {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .notification-time {
+            font-size: 11px;
+            color: #999;
+        }
+        
+        .notification-footer {
+            padding: 10px;
+            text-align: center;
+            border-top: 1px solid #eee;
+        }
+        
+        .view-all {
+            color: #3b82f6;
+            text-decoration: none;
+            font-size: 13px;
+        }
+        
+        .mobile-header-controls {
+            display: flex;
+            align-items: center;
+        }
+        
         /* Responsive adjustments */
         @media (max-width: 992px) {
             body {
@@ -539,6 +778,13 @@
             .sidebar-overlay {
                 display: block;
             }
+            
+            #notificationCanvas {
+                top: var(--mobile-header-height);
+                right: 10px;
+                width: 280px;
+                max-height: calc(100vh - var(--mobile-header-height) - 20px);
+            }
         }
         
         @media (max-width: 576px) {
@@ -579,6 +825,12 @@
             .logout-btn {
                 width: 100%;
             }
+            
+            #notificationCanvas {
+                width: 90%;
+                left: 5%;
+                right: 5%;
+            }
         }
     </style>
 </head>
@@ -586,23 +838,75 @@
     <!-- Mobile Header -->
     <div class="mobile-header">
         <div class="logo">Ansh Vivah</div>
-        <button class="mobile-menu-btn" onclick="toggleMobileSidebar()">
-            <i class="fas fa-bars"></i>
-        </button>
+        <div class="mobile-header-controls">
+            <button class="mobile-notification-btn" onclick="toggleNotificationCanvas()">
+                <i class="fas fa-bell notification-bell"></i>
+                <span class="notification-badge">3</span>
+            </button>
+            <button class="mobile-menu-btn" onclick="toggleMobileSidebar()">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
     </div>
     
     <!-- Sidebar Overlay -->
     <div class="sidebar-overlay" onclick="toggleMobileSidebar()"></div>
     
+    <!-- Notification Canvas -->
+    <div id="notificationCanvas">
+        <div class="notification-header">
+            <h3>Notifications</h3>
+            <button class="notification-close" onclick="toggleNotificationCanvas()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="notification-content">
+            <div class="notification-item unread">
+                <div class="notification-title">New User Registered</div>
+                <div class="notification-message">John Doe has registered on the platform</div>
+                <div class="notification-time">2 minutes ago</div>
+            </div>
+            <div class="notification-item unread">
+                <div class="notification-title">Payment Received</div>
+                <div class="notification-message">Payment of $99.00 received from Jane Smith</div>
+                <div class="notification-time">1 hour ago</div>
+            </div>
+            <div class="notification-item">
+                <div class="notification-title">Profile Verification</div>
+                <div class="notification-message">5 profiles pending verification</div>
+                <div class="notification-time">3 hours ago</div>
+            </div>
+            <div class="notification-item">
+                <div class="notification-title">System Update</div>
+                <div class="notification-message">New version 2.3.0 is available</div>
+                <div class="notification-time">1 day ago</div>
+            </div>
+            <div class="notification-item">
+                <div class="notification-title">Maintenance Scheduled</div>
+                <div class="notification-message">System maintenance scheduled for tomorrow at 2 AM</div>
+                <div class="notification-time">2 days ago</div>
+            </div>
+        </div>
+        <div class="notification-footer">
+            <a href="#" class="view-all">View All Notifications</a>
+        </div>
+    </div>
+
     <!-- Floating Sidebar -->
     <div class="sidebar">
         <div class="sidebar-content">
             <div class="panel-header">
-                <button class="toggle-btn" onclick="toggleSidebar()">
-                    <i class="fas fa-chevron-left"></i>
-                </button>
-                <div class="panel-title">Ansh Vivah</div>
-                <div class="panel-subtitle">Admin Panel</div>
+                <img src="https://placehold.co/50x50/000000/FFFFFF?text=Logo" alt="Logo" class="panel-logo">
+                <div class="panel-header-text"> <!-- New container for title and subtitle -->
+                    <div class="panel-title">Ansh Vivah</div>
+                    <div class="panel-subtitle">
+                        Admin Panel
+                    </div>
+                </div>
+                <div class="notification-bell-container" onclick="toggleNotificationCanvas()">
+                    <i class="fas fa-bell notification-bell"></i>
+                    <span class="notification-badge">3</span>
+                </div>
             </div>
             
             <div class="sidebar-section">
@@ -613,58 +917,63 @@
                 </div>
                 <div class="sidebar-item has-submenu" onclick="toggleSubmenu(this)">
                     <span class="sidebar-item-icon"><i class="fas fa-users"></i></span>
-                    <span class="sidebar-item-text">User Management</span>
+                    <span class="sidebar-item-text">Verification</span>
                 </div>
                 <div class="submenu">
-                    <div class="sidebar-item" data-page="users">
-                        <span class="sidebar-item-icon"><i class="fas fa-user"></i></span>
-                        <span class="sidebar-item-text">Users</span>
+                    <div class="sidebar-item" data-page="profile-verification">
+                        <span class="sidebar-item-icon"><i class="fas fa-id-card"></i></span>
+                        <span class="sidebar-item-text">Profile Verification</span>
                     </div>
-                    <div class="sidebar-item" data-page="roles">
-                        <span class="sidebar-item-icon"><i class="fas fa-user-tag"></i></span>
-                        <span class="sidebar-item-text">Roles</span>
+                    <div class="sidebar-item" data-page="photo-verification">
+                        <span class="sidebar-item-icon"><i class="fas fa-image"></i></span>
+                        <span class="sidebar-item-text">Photo Verification</span>
                     </div>
-                    <div class="sidebar-item" data-page="permissions">
-                        <span class="sidebar-item-icon"><i class="fas fa-key"></i></span>
-                        <span class="sidebar-item-text">Permissions</span>
+                    <div class="sidebar-item" data-page="document-verification">
+                        <span class="sidebar-item-icon"><i class="fas fa-file-alt"></i></span>
+                        <span class="sidebar-item-text">Document Verification</span>
                     </div>
                 </div>
                 <div class="sidebar-item" data-page="plans">
                     <span class="sidebar-item-icon"><i class="fas fa-clipboard-list"></i></span>
-                    <span class="sidebar-item-text">Plans</span>
+                    <span class="sidebar-item-text">User Managemnt</span>
+                </div>
+                <div class="sidebar-item" data-page="suspicious-activity">
+                    <span class="sidebar-item-icon"><i class="fas fa-exclamation-triangle"></i></span>
+                    <span class="sidebar-item-text">Suspecious Activity</span>
+                </div>
+                <div class="sidebar-item" data-page="plans-activity">
+                    <span class="sidebar-item-icon"><i class="fas fa-chart-line"></i></span>
+                    <span class="sidebar-item-text">Plans Activity</span>
+                </div>
+                <div class="sidebar-item" data-page="transaction">
+                    <span class="sidebar-item-icon"><i class="fas fa-exchange-alt"></i></span>
+                    <span class="sidebar-item-text">Transaction</span>
+                </div>
+
+                <div class="sidebar-item" data-page="feedback">
+                    <span class="sidebar-item-icon"><i class="fas fa-comments"></i></span>
+                    <span class="sidebar-item-text">Feedback</span>
                 </div>
                 <div class="sidebar-item" data-page="complaints">
-                    <span class="sidebar-item-icon"><i class="fas fa-exclamation-circle"></i></span>
+                    <span class="sidebar-item-icon"><i class="fas fa-frown"></i></span>
                     <span class="sidebar-item-text">Complaints</span>
                 </div>
-                <div class="sidebar-item" data-page="reports">
-                    <span class="sidebar-item-icon"><i class="fas fa-chart-bar"></i></span>
-                    <span class="sidebar-item-text">Reports</span>
-                </div>
-            </div>
-            
-            <div class="sidebar-divider"></div>
-            
-            <div class="sidebar-section">
                 <div class="sidebar-section-title">Settings</div>
                 <div class="sidebar-item has-submenu" onclick="toggleSubmenu(this)">
                     <span class="sidebar-item-icon"><i class="fas fa-cog"></i></span>
-                    <span class="sidebar-item-text">Preferences</span>
+                    <span class="sidebar-item-text">Settings</span>
                 </div>
                 <div class="submenu">
-                    <div class="sidebar-item" data-page="theme-settings">
-                        <span class="sidebar-item-icon"><i class="fas fa-palette"></i></span>
-                        <span class="sidebar-item-text">Theme Settings</span>
+                    <div class="sidebar-item" data-page="change-password">
+                        <span class="sidebar-item-icon"><i class="fas fa-lock"></i></span>
+                        <span class="sidebar-item-text">Change Password</span>
                     </div>
                     <div class="sidebar-item" data-page="language">
                         <span class="sidebar-item-icon"><i class="fas fa-language"></i></span>
-                        <span class="sidebar-item-text">Language</span>
+                        <span class="sidebar-item-text">Privacy Policies</span>
                     </div>
                 </div>
-                <div class="sidebar-item" data-page="security">
-                    <span class="sidebar-item-icon"><i class="fas fa-lock"></i></span>
-                    <span class="sidebar-item-text">Security</span>
-                </div>
+
             </div>
         </div>
         
@@ -685,102 +994,185 @@
         <!-- Dashboard Page -->
         <div class="content-page active" id="dashboard">
             <div class="page-header">
-                <h2><i class="fas fa-tachometer-alt"></i> Dashboard</h2>
-                <p>Overview of your application statistics and activities</p>
+                <div class="page-header-left">
+                    <h2><i class="fas fa-tachometer-alt"></i> Dashboard</h2>
+                    <p class="breadcrumbs">Overview of your application statistics and activities</p>
+                </div>
+                <div class="page-header-actions">
+                    <button class="action-button">
+                        <i class="fas fa-upload"></i> Export
+                    </button>
+                    <button class="action-button">
+                        <i class="fas fa-filter"></i> Filter
+                    </button>
+                </div>
             </div>
             <p>This is the main dashboard page showing key metrics and quick access to important features.</p>
         </div>
         
-        <!-- Users Page -->
-        <div class="content-page" id="users">
+        <!-- Profile Verification Page -->
+        <div class="content-page" id="profile-verification">
             <div class="page-header">
-                <h2><i class="fas fa-user"></i> Users</h2>
-                <p>Manage all user accounts in the system</p>
+                <div class="page-header-left">
+                    <h2><i class="fas fa-id-card"></i> Profile Verification</h2>
+                    <p class="breadcrumbs">Verification > Profile Verification</p>
+                </div>
             </div>
-            <p>This is the users management page where you can view, add, edit, and delete user accounts.</p>
+            <p>This page allows you to review and approve/reject user profile verification requests.</p>
+        </div>
+
+        <!-- Photo Verification Page -->
+        <div class="content-page" id="photo-verification">
+            <div class="page-header">
+                <div class="page-header-left">
+                    <h2><i class="fas fa-image"></i> Photo Verification</h2>
+                    <p class="breadcrumbs">Verification > Photo Verification</p>
+                </div>
+            </div>
+            <p>This page allows you to review and approve/reject user photo verification requests.</p>
+        </div>
+
+        <!-- Document Verification Page -->
+        <div class="content-page" id="document-verification">
+            <div class="page-header">
+                <div class="page-header-left">
+                    <h2><i class="fas fa-file-alt"></i> Document Verification</h2>
+                    <p class="breadcrumbs">Verification > Document Verification</p>
+                </div>
+            </div>
+            <p>This page allows you to review and approve/reject user document verification requests.</p>
         </div>
         
-        <!-- Roles Page -->
-        <div class="content-page" id="roles">
-            <div class="page-header">
-                <h2><i class="fas fa-user-tag"></i> Roles</h2>
-                <p>Manage user roles and access levels</p>
-            </div>
-            <p>This is the roles management page where you can define different user roles and their permissions.</p>
-        </div>
-        
-        <!-- Permissions Page -->
-        <div class="content-page" id="permissions">
-            <div class="page-header">
-                <h2><i class="fas fa-key"></i> Permissions</h2>
-                <p>Configure system permissions for different roles</p>
-            </div>
-            <p>This is the permissions management page where you can set up granular access controls.</p>
-        </div>
-        
-        <!-- Plans Page -->
+        <!-- User Management Page -->
         <div class="content-page" id="plans">
             <div class="page-header">
-                <h2><i class="fas fa-clipboard-list"></i> Plans</h2>
-                <p>Manage subscription plans and pricing</p>
+                <div class="page-header-left">
+                    <h2><i class="fas fa-clipboard-list"></i> User Management</h2>
+                    <p class="breadcrumbs">Main Menu > User Management</p>
+                </div>
             </div>
             <p>This is the plans management page where you can create and modify subscription plans.</p>
         </div>
         
+        <!-- Suspicious Activity Page -->
+        <div class="content-page" id="suspicious-activity">
+            <div class="page-header">
+                <div class="page-header-left">
+                    <h2><i class="fas fa-exclamation-triangle"></i> Suspicious Activity</h2>
+                    <p class="breadcrumbs">Main Menu > Suspicious Activity</p>
+                </div>
+            </div>
+            <p>This page displays logs and alerts related to suspicious user activities.</p>
+        </div>
+
+        <!-- Plans Activity Page -->
+        <div class="content-page" id="plans-activity">
+            <div class="page-header">
+                <div class="page-header-left">
+                    <h2><i class="fas fa-chart-line"></i> Plans Activity</h2>
+                    <p class="breadcrumbs">Main Menu > Plans Activity</p>
+                </div>
+            </div>
+            <p>This page provides insights into user engagement with different subscription plans.</p>
+        </div>
+
+        <!-- Transaction Page -->
+        <div class="content-page" id="transaction">
+            <div class="page-header">
+                <div class="page-header-left">
+                    <h2><i class="fas fa-exchange-alt"></i> Transaction</h2>
+                    <p class="breadcrumbs">Main Menu > Transaction</p>
+                </div>
+            </div>
+            <p>This page lists all financial transactions within the platform.</p>
+        </div>
+        
+        <!-- Feedback Page -->
+        <div class="content-page" id="feedback">
+            <div class="page-header">
+                <div class="page-header-left">
+                    <h2><i class="fas fa-comments"></i> Feedback</h2>
+                    <p class="breadcrumbs">Main Menu > Feedback</p>
+                </div>
+            </div>
+            <p>This page allows you to manage feedback submitted by users.</p>
+        </div>
+
         <!-- Complaints Page -->
         <div class="content-page" id="complaints">
             <div class="page-header">
-                <h2><i class="fas fa-exclamation-circle"></i> Complaints</h2>
-                <p>View and manage user complaints and issues</p>
+                <div class="page-header-left">
+                    <h2><i class="fas fa-frown"></i> Complaints</h2>
+                    <p class="breadcrumbs">Main Menu > Complaints</p>
+                </div>
             </div>
             <p>This is the complaints management page where you can track and resolve user complaints.</p>
         </div>
         
-        <!-- Reports Page -->
-        <div class="content-page" id="reports">
+        <!-- Change Password Page -->
+        <div class="content-page" id="change-password">
             <div class="page-header">
-                <h2><i class="fas fa-chart-bar"></i> Reports</h2>
-                <p>Generate and view system reports</p>
+                <div class="page-header-left">
+                    <h2><i class="fas fa-lock"></i> Change Password</h2>
+                    <p class="breadcrumbs">Settings > Change Password</p>
+                </div>
             </div>
-            <p>This is the reports page where you can access various system analytics and reports.</p>
-        </div>
-        
-        <!-- Theme Settings Page -->
-        <div class="content-page" id="theme-settings">
-            <div class="page-header">
-                <h2><i class="fas fa-palette"></i> Theme Settings</h2>
-                <p>Customize the look and feel of the application</p>
-            </div>
-            <p>This is the theme settings page where you can change colors, layouts, and other visual elements.</p>
+            <p>This page provides the interface for changing user passwords.</p>
         </div>
         
         <!-- Language Page -->
         <div class="content-page" id="language">
             <div class="page-header">
-                <h2><i class="fas fa-language"></i> Language</h2>
-                <p>Configure language and localization settings</p>
+                <div class="page-header-left">
+                    <h2><i class="fas fa-language"></i> Language</h2>
+                    <p class="breadcrumbs">Settings > Language</p>
+                </div>
             </div>
             <p>This is the language settings page where you can set the default language and manage translations.</p>
         </div>
         
-        <!-- Security Page -->
-        <div class="content-page" id="security">
+        <!-- Security Page (renamed from original 'security' to avoid ID conflict if needed for other content) -->
+        <div class="content-page" id="security-settings">
             <div class="page-header">
-                <h2><i class="fas fa-lock"></i> Security</h2>
-                <p>Configure security settings and policies</p>
+                <div class="page-header-left">
+                    <h2><i class="fas fa-lock"></i> Security Settings</h2>
+                    <p class="breadcrumbs">Settings > Security Settings</p>
+                </div>
             </div>
             <p>This is the security settings page where you can manage authentication, passwords, and other security features.</p>
         </div>
     </div>
 
     <script>
-        function toggleSidebar() {
-            const sidebar = document.querySelector('.sidebar');
-            sidebar.classList.toggle('collapsed');
+        function toggleNotificationCanvas() {
+            const canvas = document.getElementById("notificationCanvas");
+            canvas.classList.toggle("active");
             
-            // Save state to localStorage
-            const isCollapsed = sidebar.classList.contains('collapsed');
-            localStorage.setItem('sidebarCollapsed', isCollapsed);
+            // Close when clicking outside
+            if (canvas.classList.contains("active")) {
+                document.addEventListener('click', closeNotificationOnClickOutside);
+            } else {
+                document.removeEventListener('click', closeNotificationOnClickOutside);
+            }
+        }
+        
+        function closeNotificationOnClickOutside(event) {
+            const canvas = document.getElementById("notificationCanvas");
+            const bellIcons = document.querySelectorAll('.notification-bell, .mobile-notification-btn');
+            
+            let isClickInsideCanvas = canvas.contains(event.target);
+            let isClickOnBell = false;
+            
+            bellIcons.forEach(bell => {
+                if (bell.contains(event.target)) {
+                    isClickOnBell = true;
+                }
+            });
+            
+            if (!isClickInsideCanvas && !isClickOnBell) {
+                canvas.classList.remove("active");
+                document.removeEventListener('click', closeNotificationOnClickOutside);
+            }
         }
         
         function toggleMobileSidebar() {
@@ -811,9 +1203,27 @@
         }
         
         function logout() {
-            alert('Logout functionality would go here');
             // In a real app, you would redirect to logout endpoint
             // window.location.href = '/logout';
+            // Using a custom message box instead of alert()
+            const messageBox = document.createElement('div');
+            messageBox.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background-color: white;
+                padding: 20px;
+                border-radius: 8px;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+                z-index: 1000;
+                text-align: center;
+            `;
+            messageBox.innerHTML = `
+                <p>Logout functionality would go here.</p>
+                <button onclick="this.parentNode.remove()" style="margin-top: 15px; padding: 8px 15px; background-color: #3b82f6; color: white; border: none; border-radius: 5px; cursor: pointer;">Close</button>
+            `;
+            document.body.appendChild(messageBox);
         }
         
         // Close sidebar when clicking on a menu item in mobile view
@@ -825,9 +1235,10 @@
         
         // Initialize sidebar state from localStorage
         document.addEventListener('DOMContentLoaded', function() {
-            const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
-            if (isCollapsed) {
-                document.querySelector('.sidebar').classList.add('collapsed');
+            // Remove the toggle button functionality
+            const toggleBtn = document.querySelector('.toggle-btn');
+            if (toggleBtn) {
+                toggleBtn.remove();
             }
             
             // Add click event to all sidebar items (except those with submenus)
@@ -877,10 +1288,15 @@
             document.addEventListener('click', function(event) {
                 const sidebar = document.querySelector('.sidebar');
                 const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
-                
+                const notificationCanvas = document.getElementById('notificationCanvas'); // Get notification canvas
+                const notificationBell = document.querySelector('.notification-bell'); // Get notification bell
+
+                // Check if click is outside sidebar, mobile menu button, notification canvas, and notification bell
                 if (window.innerWidth <= 992 && 
                     !sidebar.contains(event.target) && 
                     !mobileMenuBtn.contains(event.target) &&
+                    !notificationCanvas.contains(event.target) && // Check for notification canvas
+                    !notificationBell.contains(event.target) && // Check for notification bell
                     sidebar.classList.contains('active')) {
                     toggleMobileSidebar();
                 }
@@ -895,6 +1311,7 @@
             if (window.innerWidth > 992) {
                 sidebar.classList.remove('active');
                 overlay.classList.remove('active');
+                
                 document.body.style.overflow = '';
             }
         });
